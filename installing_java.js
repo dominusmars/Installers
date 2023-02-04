@@ -10,13 +10,8 @@ const progress = require('progress-stream')
 var platform = os.platform();
 
 var downloadPath = path.join(os.homedir(), "Downloads");
-var macosxURL =
-    "https://dl.dropboxusercontent.com/s/rdo1p1diwqi87nt/jdk-8u351-macosx-x64.zip?dl=0";
-
 var windowURL =
     "https://dl.dropboxusercontent.com/s/mq1qn55tkdatwak/jdk-8u351-windows-x64.zip?dl=0";
-var linuxURL =
-    "https://dl.dropboxusercontent.com//s/mch2c7zakhlzf6m/jdk-8u351-linux-x64.zip?dl=0";
 
 const isRunning = async (query) => {
     let platform = process.platform;
@@ -137,51 +132,9 @@ async function installWins() {
         });
 }
 async function installLinux() {
-    var zipName = "jdk-8u351-linux-x64.zip"
-    var binaryPath = path.join(downloadPath, zipName);
-    var tempJavaDir = path.join(downloadPath, "java")
-    console.log("Downloading Zip")
-    var str = SetUpStream(binaryPath)
-    request(linuxURL)
-        .pipe(str)
-        .pipe(fs.createWriteStream(binaryPath))
-        .on("close", async () => {
-            console.log("File written!");
-            var zip = new AdmZip(binaryPath);
-            zip.extractAllTo(tempJavaDir);
-            console.log("Unzipped!");
-            var files = fs.readdirSync(tempJavaDir)
-            console.log("installing java")
-            var child = chp.spawn("sudo rpm" + files[0], {
-                'stdio': ['inherit', 'inherit', 'inherit', 'ipc']
-            })
-            child.on('error', (err) => {
-                console.log(err)
-                try {
-                    fs.rmSync(tempJavaDir, {
-                        'recursive': true
-                    })
-                    fs.rmSync(binaryPath, {
-                        'recursive': true
-                    })
-                } catch (error) {
-
-                }
-            })
-            child.on('close', () => {
-                console.log("Java installed")
-                try {
-                    fs.rmSync(tempJavaDir, {
-                        'recursive': true
-                    })
-                    fs.rmSync(binaryPath, {
-                        'recursive': true
-                    })
-                } catch (error) {
-
-                }
-            })
-        })
+    var child = chp.exec('sudo apt-get install openjdk-8-jdk')
+    child.stdout.pipe(process.stdout)
+    child.stdin.pipe(process.stdin)
 }
 
 
