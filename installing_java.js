@@ -60,7 +60,7 @@ async function installDarwin() {
             console.log(e)
         })
         child.on('close', async () => {
-            console.log("java successfully installed")
+            console.log("Java Successfully Installed")
         })
 
     })
@@ -104,7 +104,7 @@ async function installWins() {
                     }
                     return;
                 }
-                console.log("Java installed Successfully")
+                console.log("Java Successfully Installed")
                 nw.elevate("rundll32 sysdm.cpl,EditEnvironmentVariables", () => {
 
                     var javafolders = fs.readdirSync(windowsJavaDir)
@@ -132,9 +132,13 @@ async function installWins() {
         });
 }
 async function installLinux() {
+    console.log("Installing OpenJDK")
     var child = chp.exec('sudo apt-get install openjdk-8-jdk')
     child.stdout.pipe(process.stdout)
     child.stdin.pipe(process.stdin)
+    child.on('close', async () => {
+        console.log("Java Successfully Installed")
+    })
 }
 
 
